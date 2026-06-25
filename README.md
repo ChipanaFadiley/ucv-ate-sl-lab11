@@ -1,18 +1,15 @@
-# Laboratorio 11 - Minimax y Poda Alfa-Beta
+# Laboratorio 11 - Algoritmos Minimax y Poda Alfa-Beta
 
-Implementacion local del laboratorio de Sistemas Inteligentes. El proyecto
-compara el algoritmo Minimax con Poda Alfa-Beta usando arboles de juego
-representados como listas anidadas.
+Este laboratorio desarrolla una implementación práctica de los algoritmos Minimax y Poda Alfa-Beta dentro del curso de Sistemas Inteligentes. El objetivo principal es analizar y comparar el comportamiento de ambos métodos de búsqueda utilizando árboles de decisión representados mediante estructuras de listas anidadas.
 
-Tambien se incluye una version sencilla de tres en raya donde el agente usa
-Poda Alfa-Beta para elegir su mejor movimiento.
+Además, se incorpora una versión básica del juego Tres en Raya, donde un agente inteligente emplea la técnica de Poda Alfa-Beta para determinar la mejor jugada posible en cada turno.
 
 ## Requisitos
 
-- Python 3.12 o superior
-- pip
+* Python 3.12 o superior
+* Gestor de paquetes pip
 
-## Instalacion
+## Instalación
 
 ```powershell
 python -m venv .venv
@@ -20,13 +17,13 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-## Ejecucion
+## Ejecución
 
 ```powershell
 python -m src.main
 ```
 
-Para jugar tres en raya desde consola:
+Para iniciar una partida de Tres en Raya desde la consola:
 
 ```powershell
 python -m src.main --play
@@ -39,7 +36,7 @@ pytest
 pytest --cov=src --cov-report=term-missing --cov-report=xml
 ```
 
-## Estructura
+## Organización del proyecto
 
 ```text
 src/
@@ -53,39 +50,41 @@ tests/
   test_tic_tac_toe.py
 ```
 
-## Comparacion breve
+## Comparación entre Minimax y Poda Alfa-Beta
 
-Minimax evalua todas las hojas del arbol para garantizar la mejor decision
-suponiendo que ambos jugadores actuan racionalmente. Alfa-Beta conserva el
-mismo resultado, pero descarta ramas que ya no pueden cambiar la decision final.
-Por eso puede revisar menos hojas cuando el orden de exploracion es favorable.
+El algoritmo Minimax examina todas las posibles hojas del árbol de búsqueda para seleccionar la mejor alternativa bajo el supuesto de que ambos participantes actúan de manera óptima. Por su parte, la Poda Alfa-Beta produce exactamente la misma decisión, pero mejora la eficiencia al evitar la exploración de ramas que no influyen en el resultado final. Gracias a ello, puede reducir significativamente la cantidad de nodos evaluados cuando el árbol se encuentra favorablemente ordenado.
 
-## Tres en raya
+## Implementación de Tres en Raya
 
-El modulo `src/tic_tac_toe.py` modela un tablero de 9 casillas con `X` como
-jugador humano y `O` como agente. La funcion `choose_best_move` analiza las
-jugadas disponibles con Poda Alfa-Beta y devuelve el movimiento recomendado.
-Tambien se incluye el modo `--play` para jugar desde consola contra el agente.
+El archivo `src/tic_tac_toe.py` representa un tablero compuesto por nueve posiciones, donde el jugador humano utiliza la ficha `X` y el agente inteligente la ficha `O`. Mediante la función `choose_best_move`, el sistema analiza las posibles jugadas utilizando Poda Alfa-Beta y selecciona la opción más conveniente. Asimismo, se incluye la opción `--play`, que permite disputar una partida directamente desde la terminal.
 
-## Nota tecnica para screenshot
+## Observación técnica
 
-El error del enunciado esta en los valores esperados: con turnos alternados desde
-MAX, `sample_tree` devuelve 3, `medium_tree` devuelve 7 y `ordered_tree` devuelve
-8; la solucion fue corregir las pruebas para validar el resultado real de
-Minimax.
+Durante el desarrollo se identificó una inconsistencia entre algunos valores esperados del enunciado y los resultados obtenidos al aplicar correctamente Minimax con alternancia de turnos. Considerando que la raíz inicia como jugador MAX, los valores calculados fueron: `sample_tree = 3`, `medium_tree = 7` y `ordered_tree = 8`. Por esta razón, se ajustaron las pruebas unitarias para validar los resultados reales generados por la implementación.
 
-## Preguntas de analisis
+## Preguntas de análisis
 
-1. Alfa-Beta obtiene el mismo resultado que Minimax porque solo elimina ramas que
-   ya no pueden mejorar la decision del jugador actual.
-2. `alpha` representa la mejor puntuacion garantizada hasta el momento para MAX.
-3. `beta` representa la mejor puntuacion garantizada hasta el momento para MIN.
-4. Ahorra mas trabajo cuando los mejores movimientos se exploran primero.
-5. El orden afecta el rendimiento porque buenos valores tempranos cierran antes
-   los limites `alpha` y `beta`.
-6. Si el rival no juega racionalmente, la prediccion de Minimax puede ser
-   demasiado conservadora.
-7. Los motores de ajedrez usan esta idea para explorar jugadas futuras y cortar
-   lineas poco prometedoras.
-8. Frente a redes neuronales o aprendizaje por refuerzo, este enfoque depende de
-   una evaluacion explicita del arbol y puede crecer demasiado en juegos grandes.
+**1. ¿Por qué Alfa-Beta produce el mismo resultado que Minimax?**
+Porque únicamente descarta ramas que no tienen capacidad de modificar la decisión final, manteniendo intacto el resultado óptimo calculado por Minimax.
+
+**2. ¿Qué representa alpha dentro del algoritmo?**
+Es el mejor valor encontrado hasta el momento para el jugador MAX y funciona como límite inferior durante la búsqueda.
+
+**3. ¿Qué representa beta dentro del algoritmo?**
+Corresponde al mejor valor garantizado para el jugador MIN y actúa como límite superior dentro del proceso de evaluación.
+
+**4. ¿En qué situaciones Alfa-Beta reduce más trabajo computacional?**
+Cuando las mejores jugadas se exploran primero, ya que esto permite realizar más podas y disminuir la cantidad de nodos analizados.
+
+**5. ¿Por qué el orden de exploración influye en el rendimiento?**
+Porque valores favorables encontrados tempranamente permiten actualizar con rapidez los límites alpha y beta, aumentando las oportunidades de poda.
+
+**6. ¿Qué ocurriría si el oponente no actuara racionalmente?**
+La estrategia calculada por Minimax podría resultar demasiado conservadora, ya que el algoritmo asume que el adversario siempre elegirá la mejor respuesta posible.
+
+**7. ¿Cómo se aplica este enfoque en los motores de ajedrez?**
+Se utiliza para proyectar movimientos futuros, evaluar posiciones y descartar líneas de juego que tienen pocas probabilidades de mejorar el resultado.
+
+**8. ¿Qué limitaciones presenta frente a técnicas modernas como redes neuronales o aprendizaje por refuerzo?**
+Requiere una representación explícita del espacio de búsqueda y su costo computacional crece rápidamente en problemas complejos, mientras que los enfoques basados en aprendizaje pueden generalizar patrones sin explorar exhaustivamente todas las posibilidades.
+
